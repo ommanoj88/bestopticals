@@ -17,7 +17,7 @@ export default async function AtHomePage() {
       <main className="bg-canvas text-void">
         {/* ===== HERO (inverted band) ===== */}
         <section className="border-b border-void bg-void text-canvas">
-          <div className="mx-auto max-w-[1400px] border-x border-void/20 px-4 sm:px-6">
+          <div className="mx-auto max-w-[1400px] px-4 sm:px-6">
             <div className="flex items-center justify-between border-b border-canvas/15 py-3">
               <span className="label text-accent">{t('badge')}</span>
               <span className="label text-canvas/50">Kolar &amp; KGF</span>
@@ -46,8 +46,8 @@ export default async function AtHomePage() {
 
         {/* ===== ELIGIBILITY + EXPECT (two columns, ruled) ===== */}
         <section className="mx-auto max-w-[1400px] border-x border-void">
-          <div className="grid md:grid-cols-2 md:divide-x md:divide-void">
-            <div className="border-b border-void p-8 md:border-b-0">
+          <div className="grid gap-px bg-void md:grid-cols-2">
+            <div className="bg-canvas p-8">
               <span className="label text-accent">Who it&apos;s for</span>
               <h2 className="huge mt-3 text-3xl">{t('eligTitle')}</h2>
               <ul className="mt-6 flex flex-col">
@@ -59,7 +59,7 @@ export default async function AtHomePage() {
                 ))}
               </ul>
             </div>
-            <div className="p-8">
+            <div className="bg-canvas p-8">
               <span className="label text-accent">What to expect</span>
               <h2 className="huge mt-3 text-3xl">{t('expectTitle')}</h2>
               <ul className="mt-6 flex flex-col">
@@ -80,9 +80,9 @@ export default async function AtHomePage() {
             <span className="label text-accent">STEPS</span>
             <h2 className="huge text-4xl sm:text-5xl">{t('stepsTitle')}</h2>
           </div>
-          <div className="grid border-t border-void sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-px border-t border-void bg-void sm:grid-cols-2 lg:grid-cols-4">
             {steps.map((s, i) => (
-              <div key={i} className={`p-8 ${i > 0 ? 'border-t border-void sm:border-t-0 sm:[&:nth-child(odd)]:border-l-0 lg:border-l' : ''} ${i > 0 ? 'sm:border-l' : ''}`}>
+              <div key={i} className="bg-canvas p-8">
                 <span className="huge text-5xl text-void/20">{String(i + 1).padStart(2, '0')}</span>
                 <p className="mt-4 text-base leading-relaxed">{s}</p>
               </div>

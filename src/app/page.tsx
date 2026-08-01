@@ -34,7 +34,7 @@ export default async function Home() {
             {/* headline block */}
             <div>
               <div className="rise d1">
-                <FocusHeadline lines={['See it all,', 'perfectly clear.']} lensX={30} lensY={72} lensR={130} />
+                <FocusHeadline lines={['See it all,', 'perfectly clear.']} accentWord="perfectly" lensX={30} lensY={72} lensR={130} />
               </div>
             </div>
 
@@ -76,7 +76,7 @@ export default async function Home() {
         {/* ============ 01 · CATEGORIES (strict grid) ============ */}
         <section className="mx-auto max-w-[1400px] border-x border-void">
           <SectionHead n="01" title="Shop" note="Frames · Readers · Contacts" />
-          <div className="grid grid-cols-1 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-px border-t border-void bg-void md:grid-cols-3">
             <CatCell href="/shop?category=frames" label="Eyeglasses" from={600} big />
             <CatCell href="/shop?category=readers" label="Readers" from={600} />
             <CatCell href="/shop?category=contacts" label="Contacts" from={250} />
@@ -112,12 +112,12 @@ export default async function Home() {
         {/* ============ 04 · SHOP BY SHAPE ============ */}
         <section className="mx-auto max-w-[1400px] border-x border-b border-void">
           <SectionHead n="04" title="By shape" note="Find your fit" />
-          <div className="grid grid-cols-2 md:grid-cols-4">
-            {shapes.map((s, i) => (
+          <div className="grid grid-cols-2 gap-px border-t border-void bg-void md:grid-cols-4">
+            {shapes.map((s) => (
               <Link
                 key={s.q}
                 href={`/shop?shape=${s.q}`}
-                className={`group flex flex-col items-center gap-4 border-t border-void py-10 transition-colors hover:bg-void hover:text-canvas ${i > 0 ? 'border-l' : ''} ${i >= 2 ? '' : 'md:border-t-0'}`}
+                className="group flex flex-col items-center gap-4 bg-canvas py-10 transition-colors hover:bg-void hover:text-canvas"
               >
                 <ShapeIcon d={s.d} className="w-20" />
                 <span className="label">{s.label}</span>
@@ -191,7 +191,7 @@ function CatCell({ href, label, from, big }: { href: string; label: string; from
   return (
     <Link
       href={href}
-      className={`group relative flex flex-col justify-between border-t border-void p-8 transition-colors hover:bg-void hover:text-canvas md:border-t-0 md:[&:not(:first-child)]:border-l md:border-l-void ${big ? 'min-h-[22rem]' : 'min-h-[16rem]'}`}
+      className={`group relative flex flex-col justify-between bg-canvas p-8 transition-colors hover:bg-void hover:text-canvas ${big ? 'min-h-[22rem]' : 'min-h-[16rem]'}`}
     >
       <div className="flex items-start justify-between">
         <ShapeIcon d="rect" className="w-16 opacity-80" />

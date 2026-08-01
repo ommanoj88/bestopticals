@@ -15,9 +15,9 @@ export async function ProductRow({ title, href, bare = false }: { title: string;
   // bare = no heading/padding (used when a parent SectionHead already frames it)
   if (bare) {
     return (
-      <div className="grid grid-cols-2 md:grid-cols-4">
-        {products.map((p, i) => (
-          <div key={p.id} className={`border-void ${i > 0 ? 'border-l' : ''} ${i >= 2 ? 'border-t md:border-t-0' : ''}`}>
+      <div className="grid grid-cols-2 gap-px bg-void md:grid-cols-4">
+        {products.map((p) => (
+          <div key={p.id} className="bg-canvas">
             <ProductCard product={p} images={images[p.id] ?? []} />
           </div>
         ))}
