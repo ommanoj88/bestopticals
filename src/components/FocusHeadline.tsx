@@ -27,7 +27,12 @@ function renderLine(line: string, accentWord?: string) {
 }
 
 export function FocusHeadline({ lines, accentWord, lensX = 50, lensY = 50, lensR = 150 }: Props) {
-  const mask = `radial-gradient(circle ${lensR}px at ${lensX}% ${lensY}%, #000 0%, #000 74%, transparent 100%)`
+  // Two complementary masks so the layers never overlap:
+  //   • sharp layer  → visible ONLY inside the lens
+  //   • blurred layer → cut OUT inside the lens (inverse), so no fuzzy halo
+  //     bleeds through and muddies the sharp text.
+  const sharpMask = `radial-gradient(circle ${lensR}px at ${lensX}% ${lensY}%, #000 0%, #000 70%, transparent 82%)`
+  const blurMask = `radial-gradient(circle ${lensR}px at ${lensX}% ${lensY}%, transparent 0%, transparent 70%, #000 82%)`
   const content = (
     <>
       {renderLine(lines[0], accentWord)}
@@ -36,20 +41,24 @@ export function FocusHeadline({ lines, accentWord, lensX = 50, lensY = 50, lensR
     </>
   )
 
-  // pb + relaxed leading so descenders (the "y" in perfectly/clear) never clip
   const typeClass =
     'font-display text-5xl leading-[1.02] tracking-tight pb-[0.12em] sm:text-8xl'
 
   return (
     <div className="relative">
-      {/* blurred (uncorrected) layer */}
-      <h1 className={`${typeClass} text-void/70 [filter:blur(4px)]`}>{content}</h1>
+      {/* blurred (uncorrected) layer — cut out inside the lens */}
+      <h1
+        className={`${typeClass} text-void/70 [filter:blur(4px)]`}
+        style={{ WebkitMaskImage: blurMask, maskImage: blurMask }}
+      >
+        {content}
+      </h1>
 
-      {/* sharp layer, revealed only inside the lens */}
+      {/* sharp layer — visible only inside the lens */}
       <h1
         aria-hidden
         className={`absolute inset-0 ${typeClass} text-void`}
-        style={{ WebkitMaskImage: mask, maskImage: mask }}
+        style={{ WebkitMaskImage: sharpMask, maskImage: sharpMask }}
       >
         {content}
       </h1>
