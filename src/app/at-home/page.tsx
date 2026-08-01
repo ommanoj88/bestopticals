@@ -2,8 +2,8 @@ import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
 import { SiteHeader } from '@/components/SiteHeader'
 
-// At-home eye test + frame trial. ₹150/person, fully refundable on purchase.
-// Optician visits with 150+ frames. Mirrors Lenskart-at-Home but local + honest.
+// At-home eye test + frame trial — Swiss/brutalist to match home.
+// ₹150/person, fully refundable on purchase. Optician visits with 150+ frames.
 export default async function AtHomePage() {
   const t = await getTranslations('athome')
 
@@ -14,93 +14,95 @@ export default async function AtHomePage() {
   return (
     <>
       <SiteHeader />
-      <main className="bg-paper pt-16">
-        {/* hero */}
-        <section className="bg-ink text-chalk">
-          <div className="mx-auto grid max-w-6xl items-center gap-8 px-5 py-16 lg:grid-cols-2">
-            <div>
-              <p className="font-mono text-xs uppercase tracking-[0.25em] text-teal">{t('badge')}</p>
-              <h1 className="mt-4 font-display text-5xl leading-[1.03] sm:text-6xl">{t('title')}</h1>
-              <p className="mt-5 max-w-md text-lg text-mist">{t('sub')}</p>
-              <div className="mt-7 flex flex-wrap items-center gap-4">
+      <main className="bg-canvas text-void">
+        {/* ===== HERO (inverted band) ===== */}
+        <section className="border-b border-void bg-void text-canvas">
+          <div className="mx-auto max-w-[1400px] border-x border-void/20 px-4 sm:px-6">
+            <div className="flex items-center justify-between border-b border-canvas/15 py-3">
+              <span className="label text-accent">{t('badge')}</span>
+              <span className="label text-canvas/50">Kolar &amp; KGF</span>
+            </div>
+            <div className="grid gap-8 py-14 lg:grid-cols-[1.4fr_1fr] lg:items-end">
+              <div>
+                <h1 className="huge text-5xl sm:text-7xl">{t('title')}</h1>
+                <p className="mt-6 max-w-lg text-lg text-canvas/70">{t('sub')}</p>
                 <Link
                   href="/book?mode=home"
-                  className="min-h-12 rounded-full bg-chalk px-7 py-3 text-base font-semibold text-night transition-transform hover:-translate-y-0.5"
+                  className="mt-8 inline-flex items-center gap-3 border border-canvas px-6 py-4 font-display text-xl transition-colors hover:bg-canvas hover:text-void"
                 >
-                  {t('book')}
+                  {t('book')} <span aria-hidden>→</span>
                 </Link>
-                <div>
-                  <div className="font-mono text-xl text-chalk">{t('fee')}</div>
-                  <div className="text-sm text-teal">{t('feeNote')}</div>
-                </div>
               </div>
-            </div>
-            {/* refundable-fee highlight card */}
-            <div className="relative overflow-hidden rounded-lens border border-line-night bg-night-2 p-8">
-              <div className="sheen pointer-events-none absolute -right-10 -top-10 h-48 w-48 rounded-full opacity-30 blur-3xl" aria-hidden />
-              <div className="relative">
-                <div className="font-display text-6xl">₹150</div>
-                <p className="mt-2 text-mist">{t('feeNote')}</p>
-                <div className="mt-6 h-px bg-line-night" />
-                <p className="mt-4 font-mono text-sm text-teal">150+ frames · 12-step checkup</p>
+              {/* fee card */}
+              <div className="border border-canvas/30 p-8">
+                <div className="huge text-7xl">₹150</div>
+                <p className="mt-3 text-canvas/70">{t('feeNote')}</p>
+                <div className="my-6 h-px bg-canvas/20" />
+                <p className="label text-accent">150+ frames · 12-step checkup</p>
               </div>
             </div>
           </div>
         </section>
 
-        {/* eligibility + what to expect */}
-        <section className="mx-auto grid max-w-6xl gap-10 px-5 py-16 md:grid-cols-2">
-          <div>
-            <h2 className="font-display text-3xl text-ink">{t('eligTitle')}</h2>
-            <ul className="mt-6 flex flex-col gap-4">
-              {eligibility.map((e, i) => (
-                <li key={i} className="flex gap-3">
-                  <span className="mt-1 h-5 w-5 shrink-0 rounded-full border-2 border-teal" aria-hidden />
-                  <span className="text-base leading-relaxed text-ink-soft">{e}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <h2 className="font-display text-3xl text-ink">{t('expectTitle')}</h2>
-            <ul className="mt-6 flex flex-col gap-4">
-              {expect.map((e, i) => (
-                <li key={i} className="flex gap-3">
-                  <span className="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-teal text-[11px] font-bold text-white">
-                    ✓
-                  </span>
-                  <span className="text-base leading-relaxed text-ink-soft">{e}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
-
-        {/* how it works */}
-        <section className="border-t border-line bg-paper-2">
-          <div className="mx-auto max-w-6xl px-5 py-16">
-            <h2 className="mb-10 font-display text-3xl text-ink sm:text-4xl">{t('stepsTitle')}</h2>
-            <ol className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {steps.map((s, i) => (
-                <li key={i} className="rounded-lens border border-line bg-card p-6">
-                  <span className="font-mono text-sm text-teal">{String(i + 1).padStart(2, '0')}</span>
-                  <p className="mt-3 text-base leading-relaxed text-ink">{s}</p>
-                </li>
-              ))}
-            </ol>
+        {/* ===== ELIGIBILITY + EXPECT (two columns, ruled) ===== */}
+        <section className="mx-auto max-w-[1400px] border-x border-void">
+          <div className="grid md:grid-cols-2 md:divide-x md:divide-void">
+            <div className="border-b border-void p-8 md:border-b-0">
+              <span className="label text-accent">Who it&apos;s for</span>
+              <h2 className="huge mt-3 text-3xl">{t('eligTitle')}</h2>
+              <ul className="mt-6 flex flex-col">
+                {eligibility.map((e, i) => (
+                  <li key={i} className={`flex gap-4 py-4 ${i > 0 ? 'border-t border-void/15' : ''}`}>
+                    <span className="label shrink-0 text-faint">{String(i + 1).padStart(2, '0')}</span>
+                    <span className="text-base leading-relaxed text-mist">{e}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="p-8">
+              <span className="label text-accent">What to expect</span>
+              <h2 className="huge mt-3 text-3xl">{t('expectTitle')}</h2>
+              <ul className="mt-6 flex flex-col">
+                {expect.map((e, i) => (
+                  <li key={i} className={`flex gap-4 py-4 ${i > 0 ? 'border-t border-void/15' : ''}`}>
+                    <span className="shrink-0 text-accent" aria-hidden>✦</span>
+                    <span className="text-base leading-relaxed text-mist">{e}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </section>
 
-        {/* areas + CTA */}
-        <section className="mx-auto max-w-6xl px-5 py-16">
-          <div className="rounded-lens border border-line bg-card p-8 sm:p-10">
-            <h2 className="font-display text-2xl text-ink">{t('areasTitle')}</h2>
-            <p className="mt-3 max-w-2xl text-base text-ink-soft">{t('areas')}</p>
+        {/* ===== HOW IT WORKS (numbered grid) ===== */}
+        <section className="mx-auto max-w-[1400px] border-x border-t border-void">
+          <div className="flex items-baseline gap-4 px-8 pt-10 pb-6">
+            <span className="label text-accent">STEPS</span>
+            <h2 className="huge text-4xl sm:text-5xl">{t('stepsTitle')}</h2>
+          </div>
+          <div className="grid border-t border-void sm:grid-cols-2 lg:grid-cols-4">
+            {steps.map((s, i) => (
+              <div key={i} className={`p-8 ${i > 0 ? 'border-t border-void sm:border-t-0 sm:[&:nth-child(odd)]:border-l-0 lg:border-l' : ''} ${i > 0 ? 'sm:border-l' : ''}`}>
+                <span className="huge text-5xl text-void/20">{String(i + 1).padStart(2, '0')}</span>
+                <p className="mt-4 text-base leading-relaxed">{s}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ===== AREAS + CTA ===== */}
+        <section className="mx-auto max-w-[1400px] border-x border-y border-void bg-void text-canvas">
+          <div className="flex flex-col justify-between gap-6 p-8 sm:flex-row sm:items-end sm:p-12">
+            <div>
+              <span className="label text-accent">Where we visit</span>
+              <h2 className="huge mt-3 text-3xl sm:text-4xl">{t('areasTitle')}</h2>
+              <p className="mt-3 max-w-xl text-canvas/70">{t('areas')}</p>
+            </div>
             <Link
               href="/book?mode=home"
-              className="mt-6 inline-flex min-h-12 items-center rounded-full bg-ink px-7 py-3 text-base font-semibold text-paper transition-transform hover:-translate-y-0.5"
+              className="inline-flex shrink-0 items-center gap-3 border border-canvas px-6 py-4 font-display text-xl transition-colors hover:bg-canvas hover:text-void"
             >
-              {t('book')}
+              {t('book')} <span aria-hidden>→</span>
             </Link>
           </div>
         </section>
