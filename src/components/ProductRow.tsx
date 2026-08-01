@@ -5,12 +5,25 @@ import { ProductCard } from '@/components/ProductCard'
 
 // A titled row of real products pulled from the catalog (prices + images).
 // This is what makes the home read as a SHOP, not a landing page.
-export async function ProductRow({ title, href }: { title: string; href: string }) {
+export async function ProductRow({ title, href, bare = false }: { title: string; href: string; bare?: boolean }) {
   const products = (await listProducts({})).slice(0, 4)
   const images = await heroImagesFor(products.map((p) => p.id))
   const t = await getTranslations('store')
 
   if (products.length === 0) return null
+
+  // bare = no heading/padding (used when a parent SectionHead already frames it)
+  if (bare) {
+    return (
+      <div className="grid grid-cols-2 md:grid-cols-4">
+        {products.map((p, i) => (
+          <div key={p.id} className={`border-void ${i > 0 ? 'border-l' : ''} ${i >= 2 ? 'border-t md:border-t-0' : ''}`}>
+            <ProductCard product={p} images={images[p.id] ?? []} />
+          </div>
+        ))}
+      </div>
+    )
+  }
 
   return (
     <section className="mx-auto max-w-6xl px-5 py-12">

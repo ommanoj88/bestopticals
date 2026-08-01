@@ -18,14 +18,13 @@ export function ProductThumb({
 
   if (!hero) {
     return (
-      <div className="relative flex aspect-[4/3] w-full items-center justify-center overflow-hidden bg-gradient-to-br from-raised to-void">
-        <div className="pointer-events-none absolute inset-0 opacity-20 aurora-fill" aria-hidden />
-        <svg viewBox="0 0 120 46" className="relative w-24 text-chalk/30" fill="none" stroke="currentColor" strokeWidth="3" aria-hidden>
+      <div className="relative flex aspect-[4/3] w-full items-center justify-center overflow-hidden bg-raised">
+        <svg viewBox="0 0 120 46" className="relative w-24 text-void/25" fill="none" stroke="currentColor" strokeWidth="3" aria-hidden>
           <rect x="4" y="8" width="46" height="32" rx="10" />
           <rect x="70" y="8" width="46" height="32" rx="10" />
           <path d="M50 20 h20" />
         </svg>
-        <span className="absolute bottom-3 text-center text-xs font-medium text-mist">{name}</span>
+        <span className="label absolute bottom-3 text-center text-faint">{name}</span>
       </div>
     )
   }

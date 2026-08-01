@@ -19,16 +19,14 @@ export function ProductCard({ product, images }: { product: Product; images: Pro
   return (
     <Link
       href={`/shop/${product.id}`}
-      className="group relative flex flex-col overflow-hidden rounded-2xl glass transition-all duration-300 hover:-translate-y-1 hover:border-white/20"
+      className="group relative flex h-full flex-col bg-canvas transition-colors hover:bg-void hover:text-canvas"
     >
       {/* image + overlays */}
-      <div className="relative">
+      <div className="relative border-b border-void">
         <ProductThumb images={images} name={product.name} width={480} />
 
         {off > 0 && (
-          <span className="absolute left-3 top-3 rounded-full bg-void/70 px-2.5 py-1 text-xs font-bold text-teal backdrop-blur">
-            {off}% OFF
-          </span>
+          <span className="label absolute left-0 top-0 bg-accent px-2 py-1 text-canvas">{off}% OFF</span>
         )}
 
         <button
@@ -39,20 +37,20 @@ export function ProductCard({ product, images }: { product: Product; images: Pro
             e.preventDefault()
             setWished((w) => !w)
           }}
-          className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-void/50 text-lg backdrop-blur transition-transform hover:scale-110"
+          className="absolute right-0 top-0 flex h-9 w-9 items-center justify-center border-b border-l border-void bg-canvas text-lg text-void transition-transform hover:scale-105"
         >
-          <span className={wished ? 'text-amber' : 'text-mist'}>{wished ? '♥' : '♡'}</span>
+          {wished ? '♥' : '♡'}
         </button>
       </div>
 
       {/* body */}
-      <div className="flex flex-1 flex-col gap-2 p-4">
-        <p className="font-display text-lg leading-tight text-chalk">{product.name}</p>
+      <div className="flex flex-1 flex-col gap-1.5 p-4">
+        <p className="font-display text-lg leading-tight">{product.name}</p>
 
-        <p className="flex items-center gap-2 text-sm capitalize text-mist">
+        <p className="flex items-center gap-2 text-sm capitalize text-mist group-hover:text-canvas/70">
           {product.color && (
             <span
-              className="inline-block h-3 w-3 rounded-full ring-1 ring-white/20"
+              className="inline-block h-3 w-3 rounded-full ring-1 ring-current"
               style={{ background: swatch(product.color) }}
               aria-hidden
             />
@@ -60,19 +58,17 @@ export function ProductCard({ product, images }: { product: Product; images: Pro
           {[product.frame_shape, product.material].filter(Boolean).join(' · ')}
         </p>
 
-        <div className="mt-auto flex items-end justify-between pt-2">
+        <div className="mt-auto flex items-end justify-between pt-3">
           <div>
-            <div className="flex items-baseline gap-2">
-              <span className="text-lg font-bold text-chalk">{rupees(product.price_inr)}</span>
+            <div className="flex items-baseline gap-2 font-mono">
+              <span className="text-lg font-bold">{rupees(product.price_inr)}</span>
               {product.mrp_inr && product.mrp_inr > product.price_inr && (
-                <span className="text-xs text-faint line-through">{rupees(product.mrp_inr)}</span>
+                <span className="text-xs text-faint line-through group-hover:text-canvas/50">{rupees(product.mrp_inr)}</span>
               )}
             </div>
-            <span className="text-xs text-faint">+ lens from {rupees(300)}</span>
+            <span className="label mt-1 block text-faint group-hover:text-canvas/60">+ lens from {rupees(300)}</span>
           </div>
-          <span className="rounded-full glass px-3 py-1.5 text-xs font-semibold text-chalk transition-colors group-hover:bg-white/10">
-            View
-          </span>
+          <span className="text-xl transition-transform group-hover:translate-x-1" aria-hidden>→</span>
         </div>
       </div>
     </Link>

@@ -4,10 +4,13 @@ import { ProductRow } from '@/components/ProductRow'
 import { FocusHeadline } from '@/components/FocusHeadline'
 import { rupees } from '@/lib/money'
 
-// Home — "Aperture": dark-first, immersive. Aurora hero → bento grid (mixing
-// categories, the at-home flagship, and proof) → live product rail → pledge.
+// Home — "Grid": Swiss/brutalist. Huge grotesque type, strict columns, black
+// hairline rules, numbered sections, one hot accent (vermilion). English-only.
 export default async function Home() {
-  const benefits = ['Optician-verified', 'Same-day fitting', 'Free lens fitting', 'Honest pricing']
+  const marquee = [
+    'OPTICIAN-VERIFIED LENSES', 'SAME-DAY FITTING', 'NO HIDDEN CHARGES',
+    '27 YEARS OF FAMILY EYE CARE', 'AT-HOME EYE TESTS', 'HONEST PRICING',
+  ]
   const shapes = [
     { label: 'Rectangle', q: 'rectangle', d: 'rect' as const },
     { label: 'Round', q: 'round', d: 'round' as const },
@@ -19,175 +22,139 @@ export default async function Home() {
     <>
       <SiteHeader />
 
-      <main className="min-h-screen bg-canvas text-chalk">
-        {/* ============ IMMERSIVE HERO ============ */}
-        <section className="aurora relative overflow-hidden">
-          <div className="gridlines absolute inset-0" aria-hidden />
-          <div className="relative mx-auto flex max-w-5xl flex-col items-center px-5 pt-40 pb-28 text-center">
-            <span className="rise d1 inline-flex items-center gap-2 rounded-full glass px-4 py-1.5 text-sm text-mist">
-              <span className="h-1.5 w-1.5 rounded-full bg-chalk" aria-hidden /> Family eye care since 1998 · Kolar &amp; KGF
-            </span>
-
-            <div className="rise d2 mt-14 mb-4">
-              <FocusHeadline lines={['See it all,', 'perfectly clear.']} lensX={50} lensY={50} lensR={148} />
-            </div>
-
-            <p className="rise d3 mt-8 max-w-xl text-lg leading-relaxed text-mist">
-              Every frame fitted by a real optician and ready the same day — with lenses cut to your exact
-              prescription and priced with nothing hidden.
-            </p>
-
-            <div className="rise d4 mt-10 flex flex-wrap items-center justify-center gap-3">
-              <Link href="/shop" className="min-h-12 rounded-full bg-chalk px-8 py-3.5 font-semibold text-void transition-transform hover:-translate-y-0.5">
-                Explore frames · from {rupees(600)}
-              </Link>
-              <Link href="/book" className="min-h-12 rounded-full glass px-8 py-3.5 font-semibold text-chalk transition-colors hover:bg-white/5">
-                Book free eye test
-              </Link>
-            </div>
+      <main className="bg-canvas text-void">
+        {/* ============ 00 · HERO ============ */}
+        <section className="mx-auto max-w-[1400px] border-x border-void px-4 sm:px-6">
+          <div className="flex items-center justify-between border-b border-void/15 py-3">
+            <span className="label text-mist">00 — Since 1998 · Kolar &amp; KGF</span>
+            <span className="label text-mist">Eyewear, in focus</span>
           </div>
 
-          {/* benefit divider strip */}
-          <div className="relative border-y border-line">
-            <div className="mx-auto grid max-w-6xl grid-cols-2 divide-x divide-line sm:grid-cols-4">
-              {benefits.map((b) => (
-                <div key={b} className="px-5 py-5 text-center text-sm text-mist">
-                  {b}
-                </div>
-              ))}
+          <div className="grid gap-6 py-10 lg:grid-cols-[1.5fr_1fr] lg:py-16">
+            {/* headline block */}
+            <div>
+              <div className="rise d1">
+                <FocusHeadline lines={['See it all,', 'perfectly clear.']} lensX={30} lensY={72} lensR={130} />
+              </div>
+            </div>
+
+            {/* right rail: statement + CTAs */}
+            <div className="flex flex-col justify-end gap-6 border-void/15 lg:border-l lg:pl-6">
+              <p className="rise d2 text-lg leading-relaxed text-mist">
+                Two family shops. Every frame fitted and checked by a real optician, lenses cut to your exact
+                prescription, priced with nothing hidden. From {rupees(600)}.
+              </p>
+              <div className="rise d3 flex flex-col gap-3">
+                <Link href="/shop" className="flex items-center justify-between bg-void px-6 py-4 text-canvas transition-colors hover:bg-accent">
+                  <span className="font-display text-xl">Explore frames</span>
+                  <span aria-hidden>→</span>
+                </Link>
+                <Link href="/book" className="flex items-center justify-between border border-void px-6 py-4 transition-colors hover:bg-void hover:text-canvas">
+                  <span className="font-display text-xl">Book free eye test</span>
+                  <span aria-hidden>→</span>
+                </Link>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* ============ BENTO GRID ============ */}
-        <section className="mx-auto max-w-6xl px-5 py-8">
-          <div className="grid auto-rows-[minmax(180px,auto)] grid-cols-2 gap-4 lg:grid-cols-4">
-            {/* Eyeglasses — big tile */}
-            <Link
-              href="/shop?category=frames"
-              className="group relative col-span-2 row-span-2 flex flex-col justify-between overflow-hidden rounded-2xl glass p-7 transition-transform hover:-translate-y-1"
-            >
-              <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full opacity-30 blur-3xl aurora-fill" aria-hidden />
-              <div className="relative flex items-center justify-between">
-                <span className="font-mono text-xs uppercase tracking-widest text-teal">Bestselling</span>
-                <span className="rounded-full glass px-3 py-1 text-xs text-mist">From {rupees(600)}</span>
+        {/* ============ MARQUEE TICKER ============ */}
+        <div className="overflow-hidden border-y border-void bg-void py-3 text-canvas">
+          <div className="marquee flex w-max gap-6 whitespace-nowrap">
+            {[0, 1].map((dup) => (
+              <div key={dup} className="flex gap-6" aria-hidden={dup === 1}>
+                {marquee.map((m, i) => (
+                  <span key={i} className="label flex items-center gap-6">
+                    {m} <span className="text-accent">✦</span>
+                  </span>
+                ))}
               </div>
-              <ShapeIcon d="rect" className="relative mx-auto my-4 w-40 text-chalk/80" />
-              <div className="relative">
-                <h2 className="font-display text-4xl">Eyeglasses</h2>
-                <p className="mt-1 flex items-center gap-2 text-mist">
-                  Shop the full range
-                  <span className="transition-transform group-hover:translate-x-1" aria-hidden>→</span>
-                </p>
-              </div>
-            </Link>
+            ))}
+          </div>
+        </div>
 
-            {/* At-home flagship — inverted white tile for contrast */}
-            <Link
-              href="/at-home"
-              className="group relative col-span-2 flex flex-col justify-between overflow-hidden rounded-2xl bg-chalk p-7 text-void transition-transform hover:-translate-y-1"
-            >
-              <div className="flex items-start justify-between">
-                <span className="font-mono text-xs uppercase tracking-widest text-void/60">At-home service</span>
-                <span className="rounded-full bg-void px-3 py-1 text-xs font-semibold text-chalk">₹150 · refundable</span>
-              </div>
-              <div className="mt-6">
-                <h2 className="font-display text-3xl">Eye test &amp; frame trial at your home</h2>
-                <p className="mt-1 flex items-center gap-2 font-medium text-void/70">
-                  150+ frames, 12-step checkup
-                  <span className="transition-transform group-hover:translate-x-1" aria-hidden>→</span>
-                </p>
-              </div>
-            </Link>
+        {/* ============ 01 · CATEGORIES (strict grid) ============ */}
+        <section className="mx-auto max-w-[1400px] border-x border-void">
+          <SectionHead n="01" title="Shop" note="Frames · Readers · Contacts" />
+          <div className="grid grid-cols-1 md:grid-cols-3">
+            <CatCell href="/shop?category=frames" label="Eyeglasses" from={600} big />
+            <CatCell href="/shop?category=readers" label="Readers" from={600} />
+            <CatCell href="/shop?category=contacts" label="Contacts" from={250} />
+          </div>
+        </section>
 
-            {/* Readers */}
-            <Link href="/shop?category=readers" className="group flex flex-col justify-between rounded-2xl glass p-6 transition-transform hover:-translate-y-1">
-              <ShapeIcon d="round" className="w-16 text-chalk/70" />
-              <div>
-                <h3 className="font-display text-2xl">Readers</h3>
-                <p className="text-sm text-mist">From {rupees(600)}</p>
-              </div>
-            </Link>
-
-            {/* Contacts */}
-            <Link href="/shop?category=contacts" className="group flex flex-col justify-between rounded-2xl glass p-6 transition-transform hover:-translate-y-1">
-              <span className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-chalk/40" aria-hidden>
-                <span className="h-7 w-7 rounded-full border border-chalk/40" />
-              </span>
-              <div>
-                <h3 className="font-display text-2xl">Contacts</h3>
-                <p className="text-sm text-mist">From {rupees(250)}</p>
-              </div>
+        {/* ============ 02 · AT-HOME (inverted band) ============ */}
+        <section className="border-y border-void bg-void text-canvas">
+          <div className="mx-auto grid max-w-[1400px] gap-6 px-4 py-14 sm:px-6 lg:grid-cols-[1fr_auto] lg:items-center">
+            <div>
+              <span className="label text-accent">02 — At-home service</span>
+              <h2 className="huge mt-4 text-5xl sm:text-7xl">Eye test &amp; frame trial, at your home.</h2>
+              <p className="mt-5 max-w-xl text-lg text-canvas/70">
+                Our optician comes to you with 150+ frames and a full 12-step checkup. ₹150 per person —
+                fully refundable on any purchase.
+              </p>
+            </div>
+            <Link href="/at-home" className="flex items-center justify-between gap-8 border border-canvas px-6 py-4 transition-colors hover:bg-canvas hover:text-void">
+              <span className="font-display text-2xl">₹150 · Book a visit</span>
+              <span aria-hidden>→</span>
             </Link>
           </div>
         </section>
 
-        {/* ============ SHOP BY SHAPE ============ */}
-        <section className="mx-auto max-w-6xl px-5 py-10">
-          <h2 className="mb-6 font-display text-2xl text-chalk">Shop by shape</h2>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            {shapes.map((s) => (
-              <Link key={s.q} href={`/shop?shape=${s.q}`} className="flex items-center gap-3 rounded-2xl glass px-5 py-4 transition-colors hover:bg-white/5">
-                <ShapeIcon d={s.d} className="w-12 text-chalk/70" />
-                <span className="text-base">{s.label}</span>
+        {/* ============ 03 · BESTSELLERS ============ */}
+        <section className="mx-auto max-w-[1400px] border-x border-void">
+          <SectionHead n="03" title="Bestsellers" note="Live from our shelves" href="/shop" cta="All frames" />
+          <div className="border-t border-void">
+            <ProductRow title="" href="/shop" bare />
+          </div>
+        </section>
+
+        {/* ============ 04 · SHOP BY SHAPE ============ */}
+        <section className="mx-auto max-w-[1400px] border-x border-b border-void">
+          <SectionHead n="04" title="By shape" note="Find your fit" />
+          <div className="grid grid-cols-2 md:grid-cols-4">
+            {shapes.map((s, i) => (
+              <Link
+                key={s.q}
+                href={`/shop?shape=${s.q}`}
+                className={`group flex flex-col items-center gap-4 border-t border-void py-10 transition-colors hover:bg-void hover:text-canvas ${i > 0 ? 'border-l' : ''} ${i >= 2 ? '' : 'md:border-t-0'}`}
+              >
+                <ShapeIcon d={s.d} className="w-20" />
+                <span className="label">{s.label}</span>
               </Link>
             ))}
           </div>
         </section>
 
-        {/* ============ LIVE PRODUCT RAIL ============ */}
-        <ProductRow title="Bestsellers" href="/shop" />
-
-        {/* ============ PROOF STRIP ============ */}
-        <section className="mx-auto max-w-6xl px-5 py-12">
-          <div className="grid gap-4 md:grid-cols-3">
+        {/* ============ 05 · PLEDGE ============ */}
+        <section className="mx-auto max-w-[1400px] border-x border-b border-void">
+          <SectionHead n="05" title="Honest pricing" note="No games" />
+          <div className="grid gap-px bg-void md:grid-cols-3">
             {[
-              { q: 'Got my glasses the same afternoon. The home eye-test was so convenient for my mother.', n: 'Lakshmi R.', p: 'Kolar' },
-              { q: 'Honest pricing — they showed me the lens cost before I paid. No surprises.', n: 'Imran S.', p: 'KGF' },
-              { q: '27 years my family has trusted them. Now I reorder my son’s lenses online.', n: 'Prakash M.', p: 'Robertsonpet' },
-            ].map((r) => (
-              <figure key={r.n} className="flex flex-col gap-4 rounded-2xl glass p-6">
-                <div className="text-amber" aria-hidden>★★★★★</div>
-                <blockquote className="leading-relaxed text-chalk">“{r.q}”</blockquote>
-                <figcaption className="mt-auto text-sm text-mist"><span className="text-chalk">{r.n}</span> · {r.p}</figcaption>
-              </figure>
+              ['No subscriptions', 'Never a recurring charge you didn’t ask for.'],
+              ['No “buy 1 get 1” gimmicks', 'Tricks that quietly pad the bill. Not here.'],
+              ['No hidden charges', 'Every price — frame and lens — shown before you pay.'],
+            ].map(([t, s]) => (
+              <div key={t} className="bg-canvas p-8">
+                <span className="text-accent" aria-hidden>✕</span>
+                <h3 className="mt-4 font-display text-2xl">{t}</h3>
+                <p className="mt-2 text-mist">{s}</p>
+              </div>
             ))}
-          </div>
-        </section>
-
-        {/* ============ HONEST PRICING PLEDGE ============ */}
-        <section className="mx-auto max-w-6xl px-5 py-12">
-          <div className="relative overflow-hidden rounded-2xl glass-strong p-8 sm:p-12">
-            <div className="pointer-events-none absolute -left-20 -bottom-20 h-72 w-72 rounded-full opacity-20 blur-3xl aurora-fill" aria-hidden />
-            <h2 className="relative font-display text-3xl sm:text-5xl">Honest pricing, always.</h2>
-            <p className="relative mt-4 max-w-2xl text-lg leading-relaxed text-mist">
-              Some companies lure you with fancy offers, then quietly empty your pocket. We don’t. You pay for
-              exactly what you choose — the frame and lens you want. Nothing hidden.
-            </p>
-            <ul className="relative mt-8 grid gap-4 sm:grid-cols-3">
-              {['No subscriptions', 'No “buy 1 get 1” gimmicks', 'No hidden charges — price shown before you pay'].map((i) => (
-                <li key={i} className="flex items-start gap-2.5 text-chalk">
-                  <span className="mt-1 text-teal" aria-hidden>✕</span> {i}
-                </li>
-              ))}
-            </ul>
           </div>
         </section>
 
         {/* ============ FOOTER ============ */}
-        <footer className="mt-8 border-t border-line">
-          <div className="mx-auto grid max-w-6xl gap-8 px-5 py-12 sm:grid-cols-2 lg:grid-cols-4">
+        <footer className="mx-auto max-w-[1400px] border-x border-b border-void">
+          <div className="grid gap-8 p-8 sm:grid-cols-2 lg:grid-cols-4">
             <div>
-              <div className="flex items-center gap-2">
-                <span className="aurora-fill h-4 w-4 rounded-full" aria-hidden />
-                <span className="font-display text-lg">The Best Opticals</span>
-              </div>
-              <p className="mt-3 text-sm text-mist">Family eye care since 1998. KGF & RL Jalappa Hospital, Kolar.</p>
+              <div className="font-display text-xl font-semibold">The Best Opticals <span className="text-accent">●</span></div>
+              <p className="mt-3 text-sm text-mist">Family eye care since 1998. KGF &amp; RL Jalappa Hospital, Kolar.</p>
             </div>
             <FooterCol title="Shop" links={[['Eyeglasses', '/shop?category=frames'], ['Readers', '/shop?category=readers'], ['Contacts', '/shop?category=contacts']]} />
             <FooterCol title="Services" links={[['Book an eye test', '/book'], ['At-home visit', '/at-home'], ['Virtual try-on', '/tryon']]} />
             <div>
-              <div className="text-sm font-semibold text-chalk">Visit us</div>
+              <div className="label text-void">Visit</div>
               <ul className="mt-3 flex flex-col gap-2 text-sm text-mist">
                 <li>KGF — Robertsonpet</li>
                 <li>RL Jalappa Hospital, Kolar</li>
@@ -195,8 +162,8 @@ export default async function Home() {
               </ul>
             </div>
           </div>
-          <div className="border-t border-line">
-            <div className="mx-auto max-w-6xl px-5 py-5 text-xs text-faint">© 1998–2026 The Best Opticals · No hidden charges, ever.</div>
+          <div className="border-t border-void px-8 py-4">
+            <span className="label text-mist">© 1998–2026 The Best Opticals · No hidden charges, ever.</span>
           </div>
         </footer>
       </main>
@@ -204,22 +171,55 @@ export default async function Home() {
   )
 }
 
+function SectionHead({ n, title, note, href, cta }: { n: string; title: string; note: string; href?: string; cta?: string }) {
+  return (
+    <div className="flex items-end justify-between gap-4 px-4 pt-10 pb-5 sm:px-6">
+      <div className="flex items-baseline gap-4">
+        <span className="label text-accent">{n}</span>
+        <h2 className="huge text-4xl sm:text-6xl">{title}</h2>
+      </div>
+      {href && cta ? (
+        <Link href={href} className="label ul-sweep hidden text-void sm:inline">{cta} →</Link>
+      ) : (
+        <span className="label hidden text-mist sm:inline">{note}</span>
+      )}
+    </div>
+  )
+}
+
+function CatCell({ href, label, from, big }: { href: string; label: string; from: number; big?: boolean }) {
+  return (
+    <Link
+      href={href}
+      className={`group relative flex flex-col justify-between border-t border-void p-8 transition-colors hover:bg-void hover:text-canvas md:border-t-0 md:[&:not(:first-child)]:border-l md:border-l-void ${big ? 'min-h-[22rem]' : 'min-h-[16rem]'}`}
+    >
+      <div className="flex items-start justify-between">
+        <ShapeIcon d="rect" className="w-16 opacity-80" />
+        <span className="label">from {rupees(from)}</span>
+      </div>
+      <div className="flex items-end justify-between">
+        <h3 className="huge text-4xl sm:text-5xl">{label}</h3>
+        <span className="text-2xl transition-transform group-hover:translate-x-1" aria-hidden>→</span>
+      </div>
+    </Link>
+  )
+}
+
 function FooterCol({ title, links }: { title: string; links: [string, string][] }) {
   return (
     <div>
-      <div className="text-sm font-semibold text-chalk">{title}</div>
+      <div className="label text-void">{title}</div>
       <ul className="mt-3 flex flex-col gap-2 text-sm text-mist">
-        {links.map(([label, href]) => (
-          <li key={href}><Link href={href} className="hover:text-chalk">{label}</Link></li>
+        {links.map(([l, h]) => (
+          <li key={h}><Link href={h} className="ul-sweep hover:text-void">{l}</Link></li>
         ))}
       </ul>
     </div>
   )
 }
 
-// inline frame-shape icons
 function ShapeIcon({ d, className = '' }: { d: 'rect' | 'round' | 'square' | 'cat'; className?: string }) {
-  const c = { fill: 'none', stroke: 'currentColor', strokeWidth: 5, strokeLinejoin: 'round' as const }
+  const c = { fill: 'none', stroke: 'currentColor', strokeWidth: 4, strokeLinejoin: 'round' as const }
   return (
     <svg viewBox="0 0 160 70" className={className} aria-hidden>
       {d === 'round' ? (
@@ -227,7 +227,7 @@ function ShapeIcon({ d, className = '' }: { d: 'rect' | 'round' | 'square' | 'ca
       ) : d === 'cat' ? (
         <><path d="M14 26 q4 24 34 24 q26 0 26-22 q-30 -8 -60 -2Z" {...c} /><path d="M146 26 q-4 24 -34 24 q-26 0 -26-22 q30 -8 60 -2Z" {...c} /></>
       ) : (
-        <><rect x="14" y="16" width="56" height="40" rx={d === 'square' ? 8 : 16} {...c} /><rect x="90" y="16" width="56" height="40" rx={d === 'square' ? 8 : 16} {...c} /></>
+        <><rect x="14" y="16" width="56" height="40" rx={d === 'square' ? 6 : 14} {...c} /><rect x="90" y="16" width="56" height="40" rx={d === 'square' ? 6 : 14} {...c} /></>
       )}
       <path d="M70 34 h20" {...c} />
     </svg>
