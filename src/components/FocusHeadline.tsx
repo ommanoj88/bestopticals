@@ -31,7 +31,7 @@ export function FocusHeadline({ lines, accentWord, lensX = 50, lensY = 50, lensR
   //   • sharp layer  → visible ONLY inside the lens
   //   • blurred layer → cut OUT inside the lens (inverse), so no fuzzy halo
   //     bleeds through and muddies the sharp text.
-  const sharpMask = `radial-gradient(circle ${lensR}px at ${lensX}% ${lensY}%, #000 0%, #000 70%, transparent 82%)`
+  const sharpMask = `radial-gradient(circle ${lensR}px at ${lensX}% ${lensY}%, #000 0%, #000 90%, transparent 97%)`
   const blurMask = `radial-gradient(circle ${lensR}px at ${lensX}% ${lensY}%, transparent 0%, transparent 70%, #000 82%)`
   const content = (
     <>
