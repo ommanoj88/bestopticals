@@ -9,7 +9,7 @@ import { rupees } from '@/lib/money'
 export default async function Home() {
   const marquee = [
     'OPTICIAN-VERIFIED LENSES', 'SAME-DAY FITTING', 'NO HIDDEN CHARGES',
-    '27 YEARS OF FAMILY EYE CARE', 'AT-HOME EYE TESTS', 'HONEST PRICING',
+    '27 YEARS OF FAMILY EYE CARE', 'CUT TO YOUR PRESCRIPTION', 'HONEST PRICING',
   ]
   const shapes = [
     { label: 'Rectangle', q: 'rectangle', d: 'rect' as const },

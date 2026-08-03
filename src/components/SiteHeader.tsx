@@ -10,7 +10,6 @@ export function SiteHeader({ overHero: _overHero = false }: { overHero?: boolean
     { label: 'Eyeglasses', href: '/shop?category=frames' },
     { label: 'Readers', href: '/shop?category=readers' },
     { label: 'Contacts', href: '/shop?category=contacts' },
-    { label: 'At Home', href: '/at-home' },
     { label: 'Book Test', href: '/book' },
   ]
 

@@ -102,28 +102,5 @@
     "shapeSquare": "Square",
     "shapeCatEye": "Cat-eye",
     "shapeAviator": "Aviator"
-  },
-  "athome": {
-    "badge": "The Best Opticals — At Home",
-    "title": "Eye test & frame trial, at your home",
-    "sub": "Our optician comes to you with 150+ frames to try. A full 12-step eye checkup in your living room.",
-    "fee": "₹150 per person",
-    "feeNote": "Fully refundable on any purchase.",
-    "book": "Book a home visit",
-    "eligTitle": "Who it's for",
-    "elig1": "A well-lit room with about 10 ft of space",
-    "elig2": "Ages 14 to 75",
-    "elig3": "Not for diabetics or high-BP patients — a clinical eye test at our shop is needed instead",
-    "expectTitle": "What to expect",
-    "expect1": "12-step eye checkup by a certified optometrist",
-    "expect2": "Latest portable eye-test equipment",
-    "expect3": "Try 150+ frames at home before you buy",
-    "areasTitle": "Where we visit",
-    "areas": "KGF, Robertsonpet, Kolar town and nearby areas. Not sure? Book and we'll confirm.",
-    "stepsTitle": "How it works",
-    "step1": "Book a slot and share your address",
-    "step2": "Pay ₹150 per person (refundable on purchase)",
-    "step3": "Our optician visits, tests eyes, fits frames",
-    "step4": "Order on the spot — the fee comes off your bill"
   }
 }
