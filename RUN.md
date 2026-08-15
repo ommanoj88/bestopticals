@@ -23,7 +23,9 @@ Everything lives in one branch: the web app at the repo root, the Expo app in `m
 
 ## Using it
 - **Web:** open http://localhost:3000
-- **Mobile:** install **Expo Go** on your phone (same Wi-Fi as the PC) and scan the QR in the terminal.
+- **Mobile:** install **Expo Go** on your phone and scan the QR in the terminal. The
+  app is served over a **tunnel**, so the QR works even behind a firewall. Keep the phone
+  on the **same Wi-Fi** as the PC though — that's how it reaches the local database.
 - **Stop:** `Ctrl+C` stops web + mobile. Supabase keeps running — `npx supabase stop` to shut it down.
 
 ## Flags

@@ -128,7 +128,9 @@ def run_all(npm: str, npx: str, ip: str) -> None:
     creation = subprocess.CREATE_NEW_PROCESS_GROUP if IS_WIN else 0
     web = subprocess.Popen([npm, "run", "dev"], cwd=ROOT, stdout=subprocess.PIPE,
                            stderr=subprocess.STDOUT, text=True, creationflags=creation)
-    mob = subprocess.Popen([npx, "expo", "start"], cwd=MOBILE, stdout=subprocess.PIPE,
+    # --tunnel: phone pulls the bundle over a public URL, so firewalls / Wi-Fi
+    # client-isolation can't block it (the common "Failed to download remote update").
+    mob = subprocess.Popen([npx, "expo", "start", "--tunnel"], cwd=MOBILE, stdout=subprocess.PIPE,
                            stderr=subprocess.STDOUT, text=True, creationflags=creation)
     for p, t in ((web, "web"), (mob, "mobile")):
         threading.Thread(target=stream, args=(p, t), daemon=True).start()
