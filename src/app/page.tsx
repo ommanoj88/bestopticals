@@ -83,19 +83,19 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* ============ 02 · AT-HOME (inverted band) ============ */}
+        {/* ============ 02 · TRUST BAND (inverted) ============ */}
         <section className="border-y border-void bg-void text-canvas">
           <div className="mx-auto grid max-w-[1400px] gap-6 px-4 py-14 sm:px-6 lg:grid-cols-[1fr_auto] lg:items-center">
             <div>
-              <span className="label text-accent">02 — At-home service</span>
-              <h2 className="huge mt-4 text-5xl sm:text-7xl">Eye test &amp; frame trial, at your home.</h2>
+              <span className="label text-accent">02 — Since 1998</span>
+              <h2 className="huge mt-4 text-5xl sm:text-7xl">Every lens checked by a real optician.</h2>
               <p className="mt-5 max-w-xl text-lg text-canvas/70">
-                Our optician comes to you with 150+ frames and a full 12-step checkup. ₹150 per person —
-                fully refundable on any purchase.
+                Two family shops, 27 years. Your prescription is read, cut and fitted in-shop — and
+                stored so your next pair takes minutes, not another appointment.
               </p>
             </div>
-            <Link href="/at-home" className="flex items-center justify-between gap-8 border border-canvas px-6 py-4 transition-colors hover:bg-canvas hover:text-void">
-              <span className="font-display text-2xl">₹150 · Book a visit</span>
+            <Link href="/book" className="flex items-center justify-between gap-8 border border-canvas px-6 py-4 transition-colors hover:bg-canvas hover:text-void">
+              <span className="font-display text-2xl">Book a free eye test</span>
               <span aria-hidden>→</span>
             </Link>
           </div>
@@ -152,7 +152,7 @@ export default async function Home() {
               <p className="mt-3 text-sm text-mist">Family eye care since 1998. KGF &amp; RL Jalappa Hospital, Kolar.</p>
             </div>
             <FooterCol title="Shop" links={[['Eyeglasses', '/shop?category=frames'], ['Readers', '/shop?category=readers'], ['Contacts', '/shop?category=contacts']]} />
-            <FooterCol title="Services" links={[['Book an eye test', '/book'], ['At-home visit', '/at-home'], ['Virtual try-on', '/tryon']]} />
+            <FooterCol title="Services" links={[['Book an eye test', '/book'], ['Virtual try-on', '/tryon']]} />
             <div>
               <div className="label text-void">Visit</div>
               <ul className="mt-3 flex flex-col gap-2 text-sm text-mist">

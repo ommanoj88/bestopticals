@@ -1,0 +1,185 @@
+#!/usr/bin/env python3
+"""The Best Opticals — one-command dev runner (Windows / macOS / Linux).
+
+    python run.py
+
+Brings up EVERYTHING from a fresh clone, hands-free:
+  1. Checks tools (git, node, npm, docker) — installs via winget on Windows if missing.
+  2. Pulls the `mobile` branch into ./mobile (git worktree) if it isn't there.
+  3. Starts Docker + local Supabase — creates and seeds the DB on first run.
+  4. Writes web .env.local and points the mobile app at this PC's LAN IP.
+  5. Runs web (Next.js) + mobile (Expo) together, streaming both logs. Ctrl+C stops.
+
+Flags:  --reset  wipe & recreate the DB   |   --selfcheck  run internal tests
+"""
+from __future__ import annotations
+import json, os, re, shutil, signal, socket, subprocess, sys, threading, time
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent          # main branch = the web app
+MOBILE = ROOT / "mobile"                         # mobile branch, worktree'd in
+IS_WIN = os.name == "nt"
+SUPA_PORT = 54321
+
+def log(msg: str) -> None: print(f"\033[1m[run]\033[0m {msg}", flush=True)
+def die(msg: str) -> None: print(f"\033[31m[run] {msg}\033[0m", flush=True); sys.exit(1)
+
+def which(name: str) -> str | None:
+    return shutil.which(name) or (shutil.which(name + ".cmd") if IS_WIN else None)
+
+def run(cmd: list[str], **kw) -> subprocess.CompletedProcess:
+    return subprocess.run(cmd, **kw)
+
+# ---- 1. tools --------------------------------------------------------------
+WINGET = {"git": "Git.Git", "node": "OpenJS.NodeJS.LTS", "docker": "Docker.DockerDesktop"}
+
+def ensure_tool(name: str) -> str:
+    exe = which(name)
+    if exe:
+        return exe
+    if IS_WIN and which("winget"):
+        log(f"{name} not found — installing via winget ({WINGET[name]})…")
+        run(["winget", "install", "-e", "--id", WINGET[name],
+             "--accept-package-agreements", "--accept-source-agreements"])
+        exe = which(name)
+        if exe:
+            return exe
+    die(f"{name} is required but not installed. Install it and re-run.\n"
+        f"  Windows: winget install {WINGET.get(name,'')}\n"
+        f"  macOS:   brew install {name} (or install Docker Desktop for docker)")
+
+def ensure_docker_running(docker: str) -> None:
+    if run([docker, "info"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0:
+        return
+    log("Docker daemon not running — starting Docker Desktop…")
+    if IS_WIN:
+        subprocess.Popen(["cmd", "/c", "start", "", "Docker Desktop"])
+    elif sys.platform == "darwin":
+        run(["open", "-a", "Docker"])
+    else:
+        die("Start the Docker daemon (systemctl start docker) and re-run.")
+    for _ in range(90):                          # up to ~90s for first boot
+        time.sleep(3)
+        if run([docker, "info"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0:
+            log("Docker is up."); return
+    die("Docker didn't come up in time. Open Docker Desktop, wait for it, and re-run.")
+
+# ---- 2. mobile branch ------------------------------------------------------
+def ensure_mobile(git: str) -> None:
+    if (MOBILE / "app.json").exists():
+        return
+    log("Fetching the `mobile` branch into ./mobile …")
+    run([git, "fetch", "origin", "mobile"], cwd=ROOT, check=True)
+    r = run([git, "worktree", "add", "-B", "mobile", str(MOBILE), "origin/mobile"], cwd=ROOT)
+    if r.returncode != 0:                        # fallback: standalone clone of that branch
+        url = run([git, "remote", "get-url", "origin"], cwd=ROOT,
+                  capture_output=True, text=True).stdout.strip()
+        run([git, "clone", "--branch", "mobile", url, str(MOBILE)], check=True)
+
+# ---- 3/4. supabase + config ------------------------------------------------
+def lan_ip() -> str:
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        s.connect(("8.8.8.8", 80)); return s.getsockname()[0]   # no packet sent
+    except OSError:
+        return "127.0.0.1"
+    finally:
+        s.close()
+
+def parse_env(text: str) -> dict[str, str]:
+    out = {}
+    for line in text.splitlines():
+        m = re.match(r'\s*([A-Z0-9_]+)=(.*)', line)
+        if m:
+            out[m.group(1)] = m.group(2).strip().strip('"').strip("'")
+    return out
+
+def supabase_up(npx: str, reset: bool) -> dict[str, str]:
+    log("Starting local Supabase (first run pulls images + seeds the DB — be patient)…")
+    run([npx, "supabase", "start"], cwd=ROOT, check=True)
+    if reset:
+        log("Resetting DB (re-runs migrations + seed)…")
+        run([npx, "supabase", "db", "reset"], cwd=ROOT, input="y\n", text=True)
+    st = run([npx, "supabase", "status", "-o", "env"], cwd=ROOT,
+             capture_output=True, text=True)
+    env = parse_env(st.stdout)
+    if "ANON_KEY" not in env:
+        die("Couldn't read Supabase status.\n" + st.stdout + st.stderr)
+    return env
+
+def write_web_env(env: dict[str, str]) -> None:
+    (ROOT / ".env.local").write_text(
+        "# Auto-generated by run.py — local Supabase. Not for production.\n"
+        f"NEXT_PUBLIC_SUPABASE_URL={env['API_URL']}\n"
+        f"NEXT_PUBLIC_SUPABASE_ANON_KEY={env['ANON_KEY']}\n"
+        f"SUPABASE_SERVICE_ROLE_KEY={env['SERVICE_ROLE_KEY']}\n")
+    log("Wrote web .env.local")
+
+def patch_mobile_config(env: dict[str, str], ip: str) -> None:
+    f = MOBILE / "app.json"
+    cfg = json.loads(f.read_text())
+    extra = cfg.setdefault("expo", {}).setdefault("extra", {})
+    extra["supabaseUrl"] = f"http://{ip}:{SUPA_PORT}"    # phone reaches PC over LAN
+    extra["supabaseAnonKey"] = env["ANON_KEY"]
+    f.write_text(json.dumps(cfg, indent=2) + "\n")
+    log(f"Pointed mobile app at http://{ip}:{SUPA_PORT} (this PC's LAN IP)")
+
+def npm_install(npm: str, where: Path, label: str) -> None:
+    if (where / "node_modules").is_dir():
+        return
+    log(f"Installing {label} dependencies (one-time)…")
+    run([npm, "install"], cwd=where, check=True)
+
+# ---- 5. run both -----------------------------------------------------------
+def stream(proc: subprocess.Popen, tag: str) -> None:
+    for line in iter(proc.stdout.readline, ""):
+        print(f"\033[36m[{tag}]\033[0m {line}", end="", flush=True)
+
+def run_all(npm: str, npx: str, ip: str) -> None:
+    creation = subprocess.CREATE_NEW_PROCESS_GROUP if IS_WIN else 0
+    web = subprocess.Popen([npm, "run", "dev"], cwd=ROOT, stdout=subprocess.PIPE,
+                           stderr=subprocess.STDOUT, text=True, creationflags=creation)
+    mob = subprocess.Popen([npx, "expo", "start"], cwd=MOBILE, stdout=subprocess.PIPE,
+                           stderr=subprocess.STDOUT, text=True, creationflags=creation)
+    for p, t in ((web, "web"), (mob, "mobile")):
+        threading.Thread(target=stream, args=(p, t), daemon=True).start()
+    log(f"Web → http://localhost:3000   |   Mobile → scan the Expo QR on a phone on the same Wi-Fi ({ip})")
+    log("Press Ctrl+C to stop everything.")
+    try:
+        while web.poll() is None and mob.poll() is None:
+            time.sleep(0.5)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        for p in (web, mob):
+            if p.poll() is None:
+                p.terminate()
+        log("Stopped web + mobile. Supabase is still running — `npx supabase stop` to shut it down.")
+
+# ---- self-check ------------------------------------------------------------
+def _selfcheck() -> None:
+    e = parse_env('ANON_KEY="abc"\nAPI_URL=http://127.0.0.1:54321\n# c\nSERVICE_ROLE_KEY=xy')
+    assert e == {"ANON_KEY": "abc", "API_URL": "http://127.0.0.1:54321", "SERVICE_ROLE_KEY": "xy"}, e
+    assert re.match(r'^\d+\.\d+\.\d+\.\d+$', lan_ip()), lan_ip()
+    print("selfcheck OK")
+
+# ---- main ------------------------------------------------------------------
+def main() -> None:
+    if "--selfcheck" in sys.argv:
+        return _selfcheck()
+    reset = "--reset" in sys.argv
+    git = ensure_tool("git"); node = ensure_tool("node"); ensure_tool("npm")
+    docker = ensure_tool("docker")
+    npm, npx = which("npm"), which("npx")
+    ensure_docker_running(docker)
+    ensure_mobile(git)
+    env = supabase_up(npx, reset)
+    ip = lan_ip()
+    write_web_env(env)
+    patch_mobile_config(env, ip)
+    npm_install(npm, ROOT, "web")
+    npm_install(npm, MOBILE, "mobile")
+    run_all(npm, npx, ip)
+
+if __name__ == "__main__":
+    main()
