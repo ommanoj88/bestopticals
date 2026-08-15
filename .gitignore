@@ -40,8 +40,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# mobile branch checked out here by run.py (git worktree)
-/mobile
+# mobile (Expo) build output
+/mobile/node_modules
+/mobile/.expo
+/mobile/dist
 
 # python
 __pycache__/

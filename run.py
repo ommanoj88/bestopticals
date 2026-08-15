@@ -4,20 +4,21 @@
     python run.py
 
 Brings up EVERYTHING from a fresh clone, hands-free:
-  1. Checks tools (git, node, npm, docker) — installs via winget on Windows if missing.
-  2. Pulls the `mobile` branch into ./mobile (git worktree) if it isn't there.
-  3. Starts Docker + local Supabase — creates and seeds the DB on first run.
-  4. Writes web .env.local and points the mobile app at this PC's LAN IP.
-  5. Runs web (Next.js) + mobile (Expo) together, streaming both logs. Ctrl+C stops.
+  1. Checks tools (node, npm, docker) — installs via winget on Windows if missing.
+  2. Starts Docker + local Supabase — creates and seeds the DB on first run.
+  3. Writes web .env.local and points the mobile app at this PC's LAN IP.
+  4. Runs web (Next.js) + mobile (Expo) together, streaming both logs. Ctrl+C stops.
+
+Repo layout (single branch):  web at the root  ·  Expo app in ./mobile
 
 Flags:  --reset  wipe & recreate the DB   |   --selfcheck  run internal tests
 """
 from __future__ import annotations
-import json, os, re, shutil, signal, socket, subprocess, sys, threading, time
+import json, os, re, shutil, socket, subprocess, sys, threading, time
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent          # main branch = the web app
-MOBILE = ROOT / "mobile"                         # mobile branch, worktree'd in
+ROOT = Path(__file__).resolve().parent          # the web app (repo root)
+MOBILE = ROOT / "mobile"                         # the Expo app
 IS_WIN = os.name == "nt"
 SUPA_PORT = 54321
 
@@ -31,13 +32,13 @@ def run(cmd: list[str], **kw) -> subprocess.CompletedProcess:
     return subprocess.run(cmd, **kw)
 
 # ---- 1. tools --------------------------------------------------------------
-WINGET = {"git": "Git.Git", "node": "OpenJS.NodeJS.LTS", "docker": "Docker.DockerDesktop"}
+WINGET = {"node": "OpenJS.NodeJS.LTS", "docker": "Docker.DockerDesktop"}
 
 def ensure_tool(name: str) -> str:
     exe = which(name)
     if exe:
         return exe
-    if IS_WIN and which("winget"):
+    if IS_WIN and which("winget") and name in WINGET:
         log(f"{name} not found — installing via winget ({WINGET[name]})…")
         run(["winget", "install", "-e", "--id", WINGET[name],
              "--accept-package-agreements", "--accept-source-agreements"])
@@ -64,19 +65,7 @@ def ensure_docker_running(docker: str) -> None:
             log("Docker is up."); return
     die("Docker didn't come up in time. Open Docker Desktop, wait for it, and re-run.")
 
-# ---- 2. mobile branch ------------------------------------------------------
-def ensure_mobile(git: str) -> None:
-    if (MOBILE / "app.json").exists():
-        return
-    log("Fetching the `mobile` branch into ./mobile …")
-    run([git, "fetch", "origin", "mobile"], cwd=ROOT, check=True)
-    r = run([git, "worktree", "add", "-B", "mobile", str(MOBILE), "origin/mobile"], cwd=ROOT)
-    if r.returncode != 0:                        # fallback: standalone clone of that branch
-        url = run([git, "remote", "get-url", "origin"], cwd=ROOT,
-                  capture_output=True, text=True).stdout.strip()
-        run([git, "clone", "--branch", "mobile", url, str(MOBILE)], check=True)
-
-# ---- 3/4. supabase + config ------------------------------------------------
+# ---- 2. supabase + config --------------------------------------------------
 def lan_ip() -> str:
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
@@ -168,11 +157,10 @@ def main() -> None:
     if "--selfcheck" in sys.argv:
         return _selfcheck()
     reset = "--reset" in sys.argv
-    git = ensure_tool("git"); node = ensure_tool("node"); ensure_tool("npm")
+    ensure_tool("node"); ensure_tool("npm")
     docker = ensure_tool("docker")
     npm, npx = which("npm"), which("npx")
     ensure_docker_running(docker)
-    ensure_mobile(git)
     env = supabase_up(npx, reset)
     ip = lan_ip()
     write_web_env(env)

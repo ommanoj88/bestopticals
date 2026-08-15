@@ -9,12 +9,13 @@ python run.py
 
 That's it. On a fresh machine the script will:
 
-1. Check `git`, `node`, `npm`, `docker` — on Windows it installs missing ones with `winget`.
+1. Check `node`, `npm`, `docker` — on Windows it installs missing ones with `winget`.
 2. Start Docker Desktop if it isn't running.
-3. Pull the `mobile` branch into `./mobile` automatically.
-4. Start local Supabase and **create + seed the database** on first run.
-5. Point the web app and the mobile app at this PC (mobile uses your Wi-Fi/LAN IP).
-6. Launch **web** (http://localhost:3000) and **mobile** (Expo QR) at once.
+3. Start local Supabase and **create + seed the database** on first run.
+4. Point the web app and the mobile app at this PC (mobile uses your Wi-Fi/LAN IP).
+5. Launch **web** (http://localhost:3000) and **mobile** (Expo QR) at once.
+
+Everything lives in one branch: the web app at the repo root, the Expo app in `mobile/`.
 
 ## Requirements
 - Python 3.9+ (`python --version`) — the only thing you install by hand.
