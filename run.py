@@ -120,11 +120,34 @@ def npm_install(npm: str, where: Path, label: str) -> None:
     run([npm, "install"], cwd=where, check=True)
 
 # ---- 5. run both -----------------------------------------------------------
+def _win_pids(netstat_out: str, port: int) -> set[str]:
+    pids = set()
+    for line in netstat_out.splitlines():
+        parts = line.split()
+        if len(parts) >= 5 and parts[1].endswith(f":{port}") and parts[3] == "LISTENING":
+            pids.add(parts[4])
+    return pids
+
+def free_port(port: int) -> None:
+    """Kill whatever is already listening on `port`, so a re-run starts clean."""
+    if IS_WIN:
+        out = run(["netstat", "-ano"], capture_output=True, text=True).stdout
+        pids, kill = _win_pids(out, port), ["taskkill", "/F", "/PID"]
+    else:
+        out = run(["lsof", "-ti", f"tcp:{port}"], capture_output=True, text=True).stdout  # ponytail: lsof; swap to fuser if absent
+        pids, kill = {p for p in out.split() if p}, ["kill", "-9"]
+    for pid in pids:
+        run(kill + [pid], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    if pids:
+        log(f"Port {port} was busy — stopped {len(pids)} old process(es).")
+
 def stream(proc: subprocess.Popen, tag: str) -> None:
     for line in iter(proc.stdout.readline, ""):
         print(f"\033[36m[{tag}]\033[0m {line}", end="", flush=True)
 
 def run_all(npm: str, npx: str, ip: str) -> None:
+    free_port(3000)   # web (next dev)
+    free_port(8081)   # mobile (expo/metro) — idempotent: stop old, start fresh
     creation = subprocess.CREATE_NEW_PROCESS_GROUP if IS_WIN else 0
     web = subprocess.Popen([npm, "run", "dev"], cwd=ROOT, stdout=subprocess.PIPE,
                            stderr=subprocess.STDOUT, text=True, creationflags=creation)
@@ -152,6 +175,10 @@ def _selfcheck() -> None:
     e = parse_env('ANON_KEY="abc"\nAPI_URL=http://127.0.0.1:54321\n# c\nSERVICE_ROLE_KEY=xy')
     assert e == {"ANON_KEY": "abc", "API_URL": "http://127.0.0.1:54321", "SERVICE_ROLE_KEY": "xy"}, e
     assert re.match(r'^\d+\.\d+\.\d+\.\d+$', lan_ip()), lan_ip()
+    ns = ("  TCP    0.0.0.0:3000    0.0.0.0:0    LISTENING    1234\n"
+          "  TCP    [::]:3000      [::]:0       LISTENING    1234\n"
+          "  TCP    0.0.0.0:9999   0.0.0.0:0    LISTENING    5678\n")
+    assert _win_pids(ns, 3000) == {"1234"}, _win_pids(ns, 3000)
     print("selfcheck OK")
 
 # ---- main ------------------------------------------------------------------
