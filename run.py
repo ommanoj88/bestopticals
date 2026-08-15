@@ -119,6 +119,14 @@ def npm_install(npm: str, where: Path, label: str) -> None:
     log(f"Installing {label} dependencies (one-time)…")
     run([npm, "install"], cwd=where, check=True)
 
+def ensure_ngrok(npm: str) -> None:
+    # Tunnel mode needs @expo/ngrok; install it now so `expo start --tunnel`
+    # never stops to prompt (which fails under our piped, non-interactive stdout).
+    if (MOBILE / "node_modules" / "@expo" / "ngrok").is_dir():
+        return
+    log("Installing @expo/ngrok for tunnel mode (one-time)…")
+    run([npm, "install", "@expo/ngrok@^4.1.0"], cwd=MOBILE, check=True)
+
 # ---- 5. run both -----------------------------------------------------------
 def _win_pids(netstat_out: str, port: int) -> set[str]:
     pids = set()
@@ -196,6 +204,7 @@ def main() -> None:
     patch_mobile_config(env, ip)
     npm_install(npm, ROOT, "web")
     npm_install(npm, MOBILE, "mobile")
+    ensure_ngrok(npm)
     run_all(npm, npx, ip)
 
 if __name__ == "__main__":
